@@ -1,0 +1,10 @@
+app:
+  secrets: /etc/app/
+  image_name: container_app
+  workdir: /home/epsilond1/PycharmProjects/experiment
+  repo: https://github.com/Epsilond1/experiment.git
+prompter:
+  secrets: /etc/prompter/
+  image_name: prompter
+  workdir: ~/prompter
+  repo: https://github.com/Epsilond1/prompter.git
