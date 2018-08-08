@@ -58,21 +58,21 @@ class Instance(object):
 
     def deploy(self):
         container_id = ''
-        with Popen(['docker ps'], stdout=PIPE) as proc:
+        with Popen(['docker' 'ps'], stdout=PIPE) as proc:
             out = proc.stdout.read().split('\n')
             for line in out:
                 if self.image_name in line:
                     container_id = line.split()[0]
 
         if container_id:
-            exit_code = call('docker container stop {}'.format(container_id))
+            exit_code = call(['docker', 'container', 'stop', container_id])
             if exit_code != 0:
                 logging.error('Vsyo ploxo')
                 raise SystemError
 
-        Popen(['docker build -t {} .'.format(self.image_name)], cwd=self.workdir)
+        Popen(['docker', 'build', '-t', self.image_name], cwd=self.workdir)
 
-        exit_code = call('docker run -d -p 4000:80 {}'.format(self.image_name))
+        exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
         if exit_code != 0:
             logging.error('Container does not start')
             raise SystemError
@@ -92,4 +92,4 @@ class Instance(object):
 
 instance = Instance('app')
 instance.load_config()
-instance.start_worker()
+# instance.start_worker()
