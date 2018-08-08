@@ -59,7 +59,7 @@ class Instance(object):
     def deploy(self):
         container_id = ''
         with Popen(['docker', 'ps'], stdout=PIPE) as proc:
-            out = proc.stdout.read().split('\n')
+            out = proc.stdout.readlines()
             for line in out:
                 if self.image_name in line:
                     container_id = line.split()[0]
