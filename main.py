@@ -60,9 +60,11 @@ class Instance(object):
         container_id = ''
         with Popen(['docker', 'ps'], stdout=PIPE) as proc:
             out = proc.stdout.readlines()
+            print(out)
             for line in out:
-                if self.image_name in line:
+                if self.image_name in line.split():
                     container_id = line.split()[0]
+                    break
 
         if container_id:
             exit_code = call(['docker', 'container', 'stop', container_id])
@@ -70,7 +72,7 @@ class Instance(object):
                 print('Vsyo ploxo')
                 raise SystemError
 
-        Popen(['docker', 'build', '-t', self.image_name], cwd=self.workdir)
+        Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir)
 
         exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
         if exit_code != 0:
