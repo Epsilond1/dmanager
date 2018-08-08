@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 
 
 import git
-import logging
+import sys
 from subprocess import Popen, PIPE, call
 from yaml import load, YAMLError
 
@@ -33,7 +33,11 @@ class Instance(object):
 
         with open('config.yaml') as stream:
             try:
-                document.update(load(stream)[self._service_name])
+                try:
+                    document.update(load(stream)[self._service_name])
+                except KeyError:
+                    print('not found application ', self._service_name)
+                    raise KeyError
             except YAMLError as exc:
                 print('file reading error. text exceptions: ', exc)
                 raise
@@ -92,6 +96,15 @@ class Instance(object):
         print(self.secrets)
         print(self.repo)
 
-instance = Instance('app')
-instance.load_config()
-instance.start_worker()
+
+def __main__():
+    if len(sys.argv) < 2:
+        print('argument cli needed contains application name')
+        raise TypeError
+
+    app_name = sys.argv[1]
+    instance = Instance(app_name)
+    instance.load_config()
+    instance.start_worker()
+
+__main__()
