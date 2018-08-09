@@ -37,17 +37,17 @@ class Instance(object):
                     document.update(load(stream)[self._service_name])
                 except KeyError:
                     print('not found application ', self._service_name)
-                    raise KeyError
+                    return
             except YAMLError as exc:
                 print('file reading error. text exceptions: ', exc)
-                raise
+                return
 
         broken_params = {k_: 'not found' for k_, v_ in document.items() if not v_}
 
         if broken_params:
             print('config\'s format is broken')
             print(broken_params)
-            raise AttributeError
+            return
 
         self.repo = document['repo']
         self.workdir = document['workdir']
@@ -74,14 +74,14 @@ class Instance(object):
             exit_code = call(['docker', 'container', 'stop', container_id])
             if exit_code != 0:
                 print('Vsyo ploxo')
-                raise SystemError
+                return
 
         Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir)
 
         exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
         if exit_code != 0:
             print('Container does not start')
-            raise SystemError
+            return
 
         print('Deploy success')
 
@@ -100,7 +100,7 @@ class Instance(object):
 def __main__():
     if len(sys.argv) < 2:
         print('argument cli needed contains application name')
-        raise TypeError
+        return
 
     app_name = sys.argv[1]
     instance = Instance(app_name)
