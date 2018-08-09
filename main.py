@@ -66,7 +66,7 @@ class Instance(object):
             out = proc.stdout.readlines()
             print(out)
             for line in out:
-                if self.image_name in line.split():
+                if self.image_name.encode() in line.split():
                     container_id = line.split()[0]
                     break
 
