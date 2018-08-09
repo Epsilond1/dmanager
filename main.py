@@ -64,7 +64,6 @@ class Instance(object):
         container_id = ''
         with Popen(['docker', 'ps'], stdout=PIPE) as proc:
             out = proc.stdout.readlines()
-            print(out)
             for line in out:
                 if self.image_name.encode() in line.split():
                     container_id = line.split()[0].decode('utf-8')
