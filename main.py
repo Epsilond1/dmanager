@@ -67,7 +67,7 @@ class Instance(object):
             print(out)
             for line in out:
                 if self.image_name.encode() in line.split():
-                    container_id = line.split()[0]
+                    container_id = line.split()[0].decode('utf-8')
                     break
 
         if container_id:
