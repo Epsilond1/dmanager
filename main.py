@@ -72,7 +72,7 @@ class Instance(object):
                         break
 
         if container_id:
-            print('removing last container ', container_id)
+            print('removing last container', container_id)
             exit_code = call(['docker', 'container', 'stop', container_id])
             if exit_code != 0:
                 print('Vsyo ploxo')
@@ -80,7 +80,7 @@ class Instance(object):
 
         print('Start build container')
         exit_code = Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir).returncode
-        print('Building finished with code ', exit_code)
+        print('Building finished with code', exit_code)
 
         print('start new container')
         exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
