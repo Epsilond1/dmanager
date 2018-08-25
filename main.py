@@ -62,6 +62,7 @@ class Instance(object):
 
     def deploy(self):
         container_id = ''
+        print('start deploy')
         with Popen(['docker', 'ps'], stdout=PIPE) as proc:
             out = proc.stdout.readlines()
             for line in out:
@@ -69,6 +70,7 @@ class Instance(object):
                     container_id = line.split()[0].decode('utf-8')
                     break
 
+        print('removing last container')
         if container_id:
             exit_code = call(['docker', 'container', 'stop', container_id])
             if exit_code != 0:
@@ -77,12 +79,13 @@ class Instance(object):
 
         Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir)
 
+        print('start new container')
         exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
         if exit_code != 0:
             print('Container does not start')
             return
 
-        print('Deploy success')
+        print('deploy success')
 
     def start_worker(self):
         self.pull_revision()
