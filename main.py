@@ -65,13 +65,14 @@ class Instance(object):
         print('start deploy')
         with Popen(['docker', 'ps'], stdout=PIPE) as proc:
             out = proc.stdout.readlines()
-            for line in out:
-                if self.image_name.encode() in line.split():
-                    container_id = line.split()[0].decode('utf-8')
-                    break
+            if out:
+                for line in out:
+                    if self.image_name.encode() in line.split():
+                        container_id = line.split()[0].decode('utf-8')
+                        break
 
-        print('removing last container')
         if container_id:
+            print('removing last container ', container_id)
             exit_code = call(['docker', 'container', 'stop', container_id])
             if exit_code != 0:
                 print('Vsyo ploxo')
