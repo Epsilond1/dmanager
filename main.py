@@ -68,7 +68,7 @@ class Instance(object):
             if out:
                 for line in out:
                     if self.image_name.encode() in line.split():
-                        container_id = line.split()[0].decode('utf-8')
+                        container_id = line.split()[0].decode('utf-8').strip()
                         break
 
         if container_id:
@@ -78,7 +78,9 @@ class Instance(object):
                 print('Vsyo ploxo')
                 return
 
-        Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir)
+        print('Start build container')
+        exit_code = Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir).returncode
+        print('Building finished with code ', exit_code)
 
         print('start new container')
         exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
