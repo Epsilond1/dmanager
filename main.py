@@ -9,9 +9,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+import docker
 import git
 import sys
-from subprocess import Popen, PIPE, call
 from yaml import load, YAMLError
 
 
@@ -22,13 +22,16 @@ class Instance(object):
         self.workdir = ''
         self.image_name = ''
         self.secrets = ''
+        self.command = ''
+        self.client = docker.from_env()
 
     def load_config(self):
         document = {
             'repo': None,
             'workdir': None,
             'image_name': None,
-            'secrets': None
+            'secrets': None,
+            'command': None,
         }
 
         with open('config.yaml') as stream:
@@ -53,6 +56,7 @@ class Instance(object):
         self.workdir = document['workdir']
         self.image_name = document['image_name']
         self.secrets = document['secrets']
+        self.command = document['command']
 
     def pull_revision(self):
         print('try pull')
@@ -61,33 +65,22 @@ class Instance(object):
         print('success')
 
     def deploy(self):
-        container_id = ''
-        print('start deploy')
-        with Popen(['docker', 'ps'], stdout=PIPE) as proc:
-            out = proc.stdout.readlines()
-            if out:
-                for line in out:
-                    if self.image_name.encode() in line.split():
-                        container_id = line.split()[0].decode('utf-8').strip()
-                        break
+        print('search started containers...')
 
-        if container_id:
-            print('removing last container', container_id)
-            exit_code = call(['docker', 'container', 'stop', container_id])
-            if exit_code != 0:
-                print('Vsyo ploxo')
-                return
-
-        print('Start build container')
-        exit_code = Popen(['docker', 'build', '-t', self.image_name, '.'], cwd=self.workdir).returncode
-        print('Building finished with code', exit_code)
-
-        print('start new container')
-        exit_code = call(['docker', 'run', '-d', '-p', '4000:80', self.image_name])
-        if exit_code != 0:
-            print('Container does not start')
+        containers = self.client.containers.list(filters={'status': 'running', 'ancestor': self.image_name + ':latest'})
+        if len(containers) > 1:
+            print('found {} containers... This is problem'.format(len(containers)))
             return
+        elif len(containers) == 1:
+            print('container {} shutting down'.format(containers[0].image.tags))
+            containers[0].stop()
 
+        print('start build image')
+        self.client.images.build(path=self.workdir, tag=self.image_name, dockerfile=self.workdir+'/Dockerfile', pull=True)
+        print('building success finished')
+
+        print('start build and run container')
+        self.client.containers.run(self.image_name, ports={'80/tcp': 4000}, detach=True)
         print('deploy success')
 
     def start_worker(self):
