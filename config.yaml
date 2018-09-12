@@ -3,9 +3,10 @@ app:
   image_name: container_experiment
   workdir: /home/epsilond1/experiment
   repo: https://github.com/Epsilond1/experiment.git
-  command: -d -p 4000:80
+  branch: master
 prompter:
   secrets: /etc/prompter/
   image_name: prompter
   workdir: ~/prompter
   repo: https://github.com/Epsilond1/prompter.git
+  branch: master
