@@ -98,7 +98,7 @@ class Instance(object):
 
         print('start build and run container')
         self._client.containers.run(self._image_name, ports={
-            '{}/{}'.format(self._port_internal, self._protocol): int(self._port_external)
+            '{}/{}'.format(self._port_external, self._protocol): int(self._port_internal)
         }, detach=True)
         print('deploy success')
 
