@@ -15,6 +15,7 @@ import sys
 from subprocess import Popen
 from yaml import load, YAMLError
 
+CONFIG_NAME = 'config.yaml'
 
 class Instance(object):
     def __init__(self, service_name):
@@ -44,7 +45,7 @@ class Instance(object):
             'protocol': None,
         }
 
-        with open('config.yaml') as stream:
+        with open(CONFIG_NAME) as stream:
             try:
                 try:
                     must_params.update(load(stream)[self._service_name])
@@ -97,7 +98,7 @@ class Instance(object):
 
         print('start build and run container')
         self._client.containers.run(self._image_name, ports={
-            '{}/{}'.format(self._port_external, self._protocol): int(self._port_internal)
+            '{}/{}'.format(self._port_internal, self._protocol): int(self._port_external)
         }, detach=True)
         print('deploy success')
 
