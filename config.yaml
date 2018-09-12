@@ -6,4 +6,4 @@ app:
   branch: master
   port_external: 80
   port_internal: 4000
-  protocol: 80
+  protocol: tcp
