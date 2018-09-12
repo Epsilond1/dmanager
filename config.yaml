@@ -4,9 +4,6 @@ app:
   workdir: /home/epsilond1/experiment
   repo: https://github.com/Epsilond1/experiment.git
   branch: master
-prompter:
-  secrets: /etc/prompter/
-  image_name: prompter
-  workdir: ~/prompter
-  repo: https://github.com/Epsilond1/prompter.git
-  branch: master
+  port_external: 80
+  port_internal: 4000
+  protocol: 80

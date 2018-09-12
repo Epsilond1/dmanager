@@ -39,9 +39,6 @@ class Instance(object):
             'image_name': None,
             'secrets': None,
             'branch': None,
-        }
-
-        other_params = {
             'port_external': None,
             'port_internal': None,
             'protocol': None,
@@ -51,7 +48,6 @@ class Instance(object):
             try:
                 try:
                     must_params.update(load(stream)[self._service_name])
-                    other_params.update(load(stream)[self._service_name])
                 except KeyError:
                     print('not found application ', self._service_name)
                     return
@@ -68,21 +64,20 @@ class Instance(object):
 
         self._repo = must_params['repo']
         self._workdir = must_params['workdir']
-        if not os.path.exists(self._workdir):
-                self.run_command(['mkdir', '-p', self._workdir])
-        os.chdir(self._workdir) # change root-dir
         self._image_name = must_params['image_name']
         self._secrets = must_params['secrets']
         self._branch = must_params['branch']
 
-        self._port_external = other_params['port_external']
-        self._port_internal = other_params['port_internal']
-        self._protocol = other_params['protocol']
+        self._port_external = must_params['port_external']
+        self._port_internal = must_params['port_internal']
+        self._protocol = must_params['protocol']
 
     def pull_revision(self):
-        self.run_command(['git', 'clone', self._repo, self._workdir])
+        if not os.path.exists(self._workdir):
+            self.run_command(['git', 'clone', self._repo, '.'])
+        os.chdir(self._workdir)
         self.run_command(['git', 'checkout', self._branch])
-        self.run_command(['git', 'fetch'])
+        self.run_command(['git', 'fetch', '.'])
         print('git now is actually')
 
     def deploy(self):
