@@ -7,3 +7,12 @@ app:
   port_external: 80
   port_internal: 4000
   protocol: tcp
+ussc:
+  secrets: /etc/experiment
+  image_name: container_ussc
+  workdir: /home/epsilond1/ussc
+  repo: https://github.com/Epsilond1/test-ucsb.git
+  branch: master
+  port_external: 5555
+  port_internal: 4999
+  protocol: tcp

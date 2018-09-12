@@ -82,7 +82,7 @@ class Instance(object):
         print('git now is actually')
 
     def deploy(self):
-        print('search started containers...')
+        print('start search containers...')
 
         containers = self._client.containers.list(filters={'status': 'running', 'ancestor': self._image_name + ':latest'})
         if len(containers) > 1:
